@@ -8,50 +8,47 @@
  * @description Show tasks from nozbe. Lots of code get from MMM-Todoists
  *  
  * 
- * @see 
+ * @see https://github.com/acegla/mmm-nozbe
  */
 
 
-
-
-
-Module.register("MMM-Nozbe",{
-    defaults:{
-        accessToken: "",
+Module.register("MMM-Nozbe", {
+	defaults: {
+		accessToken: "",
 		textAlignToRight: false,
 		type: "priority", // "completed", "priority"
-        updateInterval: 60 * 1000,
-        displayLastUpdate: true, //add or not a line after the tasks with the last server update time
+		updateInterval: 60 * 1000,
+		displayLastUpdate: true, //add or not a line after the tasks with the last server update time
 		displayLastUpdateFormat: "dd - HH:mm:ss", //format to display the last update. See Moment.js documentation for all display possibilities
-    },
+	},
 
-    	// Define required scripts.
+	// Define required scripts.
 	getStyles: function () {
 		return ["MMM-Nozbe.css"];
 	},
 
-    start: function(){
-        var self = this;
+	start: function () {
+		var self = this;
 
-        if (this.config.accessToken === "") {
+		if (this.config.accessToken === "") {
 			Log.error("MMM-Nozbe: AccessToken not set!");
 			return;
 		}
 
-        this.sendSocketNotification("FETCH_NOZBE", this.config);
-        
-        this.updateIntervalID = setInterval(function () {
+		this.sendSocketNotification("FETCH_NOZBE", this.config);
+
+		this.updateIntervalID = setInterval(function () {
 			self.sendSocketNotification("FETCH_NOZBE", self.config);
 		}, this.config.updateInterval);
 
-    },
+	},
 
-    socketNotificationReceived: function (notification, payload) {
+	socketNotificationReceived: function (notification, payload) {
 		if (notification === "TASKS") {
-			if (this.config.type == "priority"){
+			if (this.config.type == "priority") {
 				this.tasks = this.getPrioityTask(payload);
-			} 
-			else if (this.config.type == "completed"){
+			}
+			else if (this.config.type == "completed") {
 				this.tasks = this.getTasksFinishedLast7Day(payload);
 			}
 			else {
@@ -70,49 +67,49 @@ Module.register("MMM-Nozbe",{
 		}
 	},
 
-    getPrioityTask: function(tasks) {
-        var self = this;
+	getPrioityTask: function (tasks) {
+		var self = this;
 
-        if (tasks == undefined) {
+		if (tasks == undefined) {
 			return;
 		}
 
-        // filter only to priority tasks
-        result_priority = tasks.filter(v => v.priority_position != null)
+		// filter only to priority tasks
+		result_priority = tasks.filter(v => v.priority_position != null)
 
-        // filter not done tasks
-        return  result_priority.filter(v => v.ended_at == null)
+		// filter not done tasks
+		return result_priority.filter(v => v.ended_at == null)
 
-        // this.tasks = result_priority_not_done
-    },
+		// this.tasks = result_priority_not_done
+	},
 
-	getTasksFinishedLast7Day: function(tasks){
+	getTasksFinishedLast7Day: function (tasks) {
 		var self = this;
 
-        if (tasks == undefined) {
+		if (tasks == undefined) {
 			return;
 		}
 
 		timeNow = Date.now()
-        // filter only to priority tasks
-        return tasks.filter(v => v.ended_at && v.ended_at > (timeNow-(7*24*60*60*1000)) )        
+		// filter only to priority tasks
+		return tasks.filter(v => v.ended_at && v.ended_at > (timeNow - (7 * 24 * 60 * 60 * 1000)))
 	},
 
-    createCell: function(className, innerHTML) {
+	createCell: function (className, innerHTML) {
 		var cell = document.createElement("div");
 		cell.className = "divTableCell " + className;
 		cell.innerHTML = innerHTML;
 		return cell;
 	},
 
-	addColumnSpacerCell: function() {
+	addColumnSpacerCell: function () {
 		return this.createCell("spacerCell", "&nbsp;");
 	},
 
-	addDueDateCell: function(item) {
+	addDueDateCell: function (item) {
 		var className = "bright align-right dueDate ";
 		var innerHTML = "";
-		
+
 		var oneDay = 24 * 60 * 60 * 1000;
 		var dueDateTime = new Date(item.due_at);
 		var dueDate = new Date(dueDateTime.getFullYear(), dueDateTime.getMonth(), dueDateTime.getDate());
@@ -123,8 +120,8 @@ Module.register("MMM-Nozbe",{
 
 		if (diffDays < -1) {
 			innerHTML = dueDate.toLocaleDateString(config.language, {
-												"month": "short"
-											}) + " " + dueDate.getDate();
+				"month": "short"
+			}) + " " + dueDate.getDate();
 			className += "xsmall overdue";
 		} else if (diffDays === -1) {
 			innerHTML = this.translate("YESTERDAY");
@@ -178,7 +175,7 @@ Module.register("MMM-Nozbe",{
 	},
 
 	getDom: function () {
-	
+
 		//Add a new div to be able to display the update time alone after all the task
 		var wrapper = document.createElement("div");
 
@@ -196,7 +193,7 @@ Module.register("MMM-Nozbe",{
 
 		var divBody = document.createElement("div");
 		divBody.className = "divTableBody";
-		
+
 		if (this.tasks === undefined) {
 			return wrapper;
 		}
@@ -212,16 +209,16 @@ Module.register("MMM-Nozbe",{
 		this.tasks.forEach(item => {
 			var divRow = document.createElement("div");
 			//Add the Row
-			divRow.className = "divTableRow" ;
-			
+			divRow.className = "divTableRow";
+
 
 			//Columns
-			if (this.config.textAlignToRight){
+			if (this.config.textAlignToRight) {
 				cell_css = "title bright alignRight"
-			}else
+			} else
 				cell_css = "title bright alignLeft"
 
-            divRow.appendChild(this.createCell(cell_css, item.name));
+			divRow.appendChild(this.createCell(cell_css, item.name));
 			// divRow.appendChild(this.addPriorityIndicatorCell(item));
 			divRow.appendChild(this.addColumnSpacerCell());
 			// divRow.appendChild(this.addTodoTextCell(item));
