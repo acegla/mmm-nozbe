@@ -78,8 +78,17 @@ Module.register("MMM-Nozbe", {
 		result_priority = tasks.filter(v => v.priority_position != null)
 
 		// filter not done tasks
-		return result_priority.filter(v => v.ended_at == null)
+		var not_end_tasks = result_priority.filter(v => v.ended_at == null)
 
+		var sort_tasks_by_prior = not_end_tasks.sort((a,b)=>{
+		    if (a.priority_position == undefined)
+		      return 1
+		    if (b.priority_position == undefined)
+		      return -1
+		  
+		    return a.priority_position - b.priority_position;
+		})
+		return sort_tasks_by_prior
 		// this.tasks = result_priority_not_done
 	},
 

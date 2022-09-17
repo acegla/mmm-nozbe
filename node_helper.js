@@ -30,7 +30,7 @@ module.exports = NodeHelper.create({
             console.log("INFO MMM-Nozbe: in fetchTodos()");
         }
 
-        const url = "https://api4.nozbe.com/v1/api/tasks?offset=0&sortBy=due_at"
+        const url = "https://api4.nozbe.com/v1/api/tasks?offset=0&sortBy=-created_at"
         var options = {
             method: 'GET',
             url: url,
