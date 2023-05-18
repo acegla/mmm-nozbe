@@ -1,0 +1,23 @@
+{
+  "name": "Magic-Mirror-Module-Nozbe",
+  "version": "1.0.0",
+  "description": "A module for nozbe app integration.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acegla/mmm-nozbe"
+  },
+  "keywords": [
+    "magic mirror",
+    "smart mirror",
+    "nozbe",
+    "module"
+  ],
+  "author": "Adam Ceglarek",
+  "license": "MIT",
+  "bugs": {
+    "url": "git+https://github.com/acegla/mmm-nozbe/issues"
+  },
+  "dependencies": {
+    "request": "^2.88.2"
+  }
+}
